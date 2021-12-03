@@ -97,7 +97,6 @@ const DraggableView = (props) => {
     onStartShouldSetPanResponder: () => true,
     onPanResponderMove: (event, gesture) => { 
       if(gesture.numberActiveTouches === 1){
-        console.log("one finger")
         if(overlapping()){
           Alert.alert("There is a collision")
         }
