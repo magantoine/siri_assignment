@@ -1,203 +1,169 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Text,
   View,
   StyleSheet,
-  FlatList,
   Dimensions,
-  Animated,
-  PanResponder,
-  Alert
+  TouchableOpacity,
 } from 'react-native';
-import Constants from 'expo-constants';
+import {DragResizeBlock} from 'react-native-drag-resize';
 
 
 
+export default function App(props) {
 
-let baseHeight = 100;
-
-
-
-
-const DraggableView = (props) => {
-  
-  const {name} = props
-  const pan = useRef(new Animated.ValueXY({x : 0, y : 0})).current
-  const size = useRef(new Animated.ValueXY({x : baseHeight, y : baseHeight})).current
-
-  const pan2 = useRef(new Animated.ValueXY({x : 0, y : 0})).current
-  const size2 = useRef(new Animated.ValueXY({x : 50, y : 50})).current
-
-  
-  
-
-  const overlapping = () => {
-    let min1x = pan.__getValue().x
-    let min1y = pan.__getValue().y
-    let min2x = pan2.__getValue().x 
-    let min2y = + pan2.__getValue().y + 450
-    let max1x = pan.__getValue().x + size.__getValue().x 
-    let max1y = pan.__getValue().y + size.__getValue().y 
-    let max2x = pan2.__getValue().x + size2.__getValue().x 
-    let max2y = + pan2.__getValue().y + size2.__getValue().y + 450
-    let aLeftOfB = max1x < min2x
-    let aRightOfB = max2x < min1x
-    let aAboveB = min1y > max2y
-    let aBelowB = max1y < min2y
-
-    return !(aLeftOfB || aRightOfB || aAboveB || aBelowB)
-  }
-
-  const panResponder1 = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onPanResponderMove: (event, gesture) => { 
-      if(gesture.numberActiveTouches === 1){
-        console.log("one finger")
-        if(overlapping()){
-          Alert.alert("bruh")
-        }
-        Animated.event([
-          null,
-          {
-            dx: pan.x, // x,y are Animated.Value
-            dy: pan.y,
-          },
-          ], {useNativeDriver: false})(event, gesture)
+    const windowDim = {
+      width: Dimensions.get('window').width,
+      height: Dimensions.get('window').height,
       }
-    },
-    onPanResponderGrant: (event, gestureState) => {
-    pan.setOffset(pan.__getValue())
-  },
-  });
 
-  const sizeResponder1 = PanResponder.create({
-     onStartShouldSetPanResponder: () => true,
-     onPanResponderMove: (event, gesture) => {
-       if(gesture.numberActiveTouches === 1){
-        console.log("two fingers")
-        Animated.event([
-          null,
-          {
-            dx: size.x, // x,y are Animated.Value
-            dy: size.y,
-          },
-          ], {useNativeDriver: false})(event, gesture)
-        }
-    },
-     onPanResponderGrant: (event, gestureState) => {
-      const newWidth = pan.__getValue().x - pan.x
-      console.log("current width : ", size.x + "new width : " + newWidth)
-      const newHeight = pan.__getValue().y - pan.y
-      console.log("current height : ", size.y + "new height : " + newHeight)
-      size.setOffset({x : newWidth, y : newHeight})
-   },
-   })
+    const CENTRAL_CONNECTOR = "c"
+    const TOP_LEFT_CONNECTOR = "tl"
+    
+    // initialization positon and size of each blocks
+    const initSize = 75
+    const initPos1 = [windowDim.width / 3, windowDim.height/2]
+    const initPos2 = [2*windowDim.width / 3, windowDim.height/2]
 
-   const panResponder2 = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onPanResponderMove: (event, gesture) => { 
-      if(gesture.numberActiveTouches === 1){
-        if(overlapping()){
-          Alert.alert("There is a collision")
-        }
-        Animated.event([
-          null,
-          {
-            dx: pan2.x, // x,y are Animated.Value
-            dy: pan2.y,
-          },
-          ], {useNativeDriver: false})(event, gesture)
 
-      }
+    // hooks to track the sizes and the position of each blocks
+    const [pos1, setpos1] = useState(initPos1)
+    const [pos2, setpos2] = useState(initPos2)
+    const [size1, setSize1] = useState([initSize, initSize])
+    const [size2, setSize2] = useState([initSize, initSize])
+    const [collisionOccured, setCollisionOccured] = useState(false)
+    
+    useEffect(() => {
+      // computes the min and max coordinates of each block
+      let min1x = pos1[0]
+      let min1y = pos1[1]
+      let min2x = pos2[0]
+      let min2y = pos2[1]
+      let max1x = pos1[0] + size1[0]
+      let max1y = pos1[1] + size1[1] 
+      let max2x = pos2[0] + size2[0] 
+      let max2y = pos2[1] + size2[1]
+      let aLeftOfB = max1x < min2x
+      let aRightOfB = max2x < min1x
+      let aAboveB = min1y > max2y
+      let aBelowB = max1y < min2y
       
-    },
-    onPanResponderGrant: (event, gestureState) => {
-    pan2.setOffset(pan2.__getValue())
-  },
-  });
+      if (!(aLeftOfB || aRightOfB || aAboveB || aBelowB)){
+        setCollisionOccured(true)
 
-  const sizeResponder2 = PanResponder.create({
-     onStartShouldSetPanResponder: () => true,
-     onPanResponderMove: (event, gesture) => {
-       if(gesture.numberActiveTouches === 1){
-        console.log("two fingers")
-        Animated.event([
-          null,
-          {
-            dx: size2.x, // x,y are Animated.Value
-            dy: size2.y,
-          },
-          ], {useNativeDriver: false})(event, gesture)
-        }
-    },
-     onPanResponderGrant: (event, gestureState) => {
-      const newWidth = pan2.__getValue().x - pan2.x
-      console.log("current width : ", size2.x + "new width : " + newWidth)
-      const newHeight = pan2.__getValue().y - pan2.y
-      console.log("current height : ", size2.y + "new height : " + newHeight)
-      size.setOffset({x : newWidth, y : newHeight})
-
-      if(overlapping()){
-        Alert.alert("There is a collision")
       }
-   },
-   })
-
-  return (
-    <>
-      <View style={styles.container}>
-        <Animated.View
-          {...panResponder1.panHandlers} 
-          style={[pan.getLayout(), styles.item]}
-        >
-          <Animated.View 
-            {...sizeResponder1.panHandler}
-            style={{width:size.x, height:size.y, justifyContent:"center", alignItems:"center"}}>
-            <Text>1</Text>
-          </Animated.View>
-        </Animated.View>
-      </View>
-      <View style={styles.container}>
-      <Animated.View
-        {...panResponder2.panHandlers} 
-        style={[pan2.getLayout(), styles.item]}
-      >
-        <Animated.View 
-          {...sizeResponder2.panHandler}
-          style={{width:size2.x, height:size2.y, justifyContent:"center", alignItems:"center"}}>
-          <Text>2</Text>
-        </Animated.View>
-      </Animated.View>
-    </View>
-  </>
-    );
-};
+    }, [pos1, pos2, size1, size2])
 
 
-export default class App extends React.Component {
+    /**
+     * The blocks' positions and their sizes are set back to the initial values
+     */
+    const resetStage = () =>{
+      setCollisionOccured(false)
+      
+      setpos1([...initPos1])
+      setpos2([...initPos2])
+      setSize1([initSize, initSize])
+      setSize2([initSize, initSize])
+    }
+    /**
+     * Computes the new size based on the modification of position of the top left corner
+     * 
+     * @param {Array} newPos new position of the top left corner
+     * @param {Array} oldPos old position of the top left corner
+     * @param {Array} oldSize old size of the block
+     * @param {Number} idx index of the block
+     */
+    const onResize = (newPos, oldPos, oldSize, idx) => {
+      let setPos = idx === 1 ? setpos1 : setpos2
+      let setSize = idx === 1 ? setSize1 : setSize2
+      
+      let dx = oldPos[0] - newPos[0]
+      let dy = oldPos[1] - newPos[1]
+      
+      setPos(newPos)
+      setSize([oldSize[0] + dx, oldSize[1] + dy])
+    }
 
-  render() {
+
+    /**
+     * Basic block to be displayed
+     * 
+     * @param {Number} idx index of the block
+     * @param {Function} onDragFunc function that will be called when the block is being dragged
+     * @param {Function} onResizeFunc function that will eb called when the block is being resized
+     * @param {Array} initPos initial position of the block
+     * @param {String} name Name of the block, will be displayed over it
+     * @returns block component
+     */
+    const block = (idx, onDragFunc, onResizeFunc, initPos, name) =>{
+      return (
+        <DragResizeBlock
+          x={initPos[0]}
+          y={initPos[1]}
+          onDrag={onDragFunc}
+          onResize={onResizeFunc}
+          connectors={[CENTRAL_CONNECTOR, TOP_LEFT_CONNECTOR]}
+          h={initSize}
+          w={initSize}
+          >
+            <View style={styles.block}>
+              <Text style={{fontSize:50}} >{name}</Text>
+            </View>
+        </DragResizeBlock>
+        ) 
+    }
+
+
+    const block1 = block(1, (newPos) => setpos1(newPos), (newSize) => onResize(newSize, pos1, size1, 1), initPos1, "A")
+    const block2 = block(2, (newPos) => setpos2(newPos), (newSize) => onResize(newSize, pos2, size2, 2), initPos2, "B")
+
     return (
-      <View style={{backgroundColor:"red", width:"100%", height:"100%", justifyContent:"center", alignItems:"center"}}>
-        <DraggableView/>
-      </View>
+      <>
+        {collisionOccured ? 
+          <View style={styles.collisionContainer}>
+            <Text>Oops... You made a collision...</Text>
+            <TouchableOpacity 
+                style={styles.backButton} 
+                onPress={resetStage}>
+              <Text style={{color:"white"}}>Press to restart</Text>
+            </TouchableOpacity>
+          </View>
+          :
+        <>   
+          {block1}
+          {block2}
+      </>           
+      }
+    </>  
     );
   }
-}
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: Constants.statusBarHeight,
-    backgroundColor: '#ecf0f1',
-    padding: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+
+  block:{
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'red',
+    justifyContent:"center", 
+    alignItems:"center",
+    borderRadius:9
+  }, 
+  backButton:{
+    backgroundColor:"grey",
+    padding:10,
+    margin:20,
+    width:"40%",
+    height:"5%",
+    justifyContent:"center",
+    alignItems:"center",
+    borderRadius:10
   },
-  item: { 
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'grey',
-  },
+  collisionContainer:{
+    width:"100%",
+    height:"100%", 
+    justifyContent:"center", 
+    alignItems:"center"
+  }
 
 });

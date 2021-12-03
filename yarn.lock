@@ -4462,6 +4462,13 @@ react-native-codegen@^0.0.6:
     jscodeshift "^0.11.0"
     nullthrows "^1.1.1"
 
+react-native-drag-resize@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/react-native-drag-resize/-/react-native-drag-resize-1.0.2.tgz#69ab3780b65e88ffbfd73665f91f5bbd893be106"
+  integrity sha512-NIqYWPqoaFtfEqN0x5Gn6oCKZUALXVlNmKG9oUtiPL7eOkXE8QjoDSMFoyu0bJbsGr0a7bF58695vnShhFCXJQ==
+  dependencies:
+    prop-types "^15.7.2"
+
 react-native-gesture-handler@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.0.0.tgz#066016e2b87922511605a23b2ee00358a3216e32"
