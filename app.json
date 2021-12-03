@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "siri_assignement",
-    "slug": "siri_assignement",
+    "name": "Siri Assignement",
+    "slug": "siri-assignement",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -17,12 +17,17 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.antoine_magron.siri_assignment",
+      "buildNumber": "1.0.0"
+      
     },
     "android": {
       "adaptiveIcon": {
+        "package": "com.antoine_magorn.siri_assignment",
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
+        "backgroundColor": "#FFFFFF",
+        "versionCode":1
       }
     },
     "web": {
