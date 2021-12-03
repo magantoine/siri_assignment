@@ -23,11 +23,12 @@
       
     },
     "android": {
+      "versionCode":1,
+      "package": "com.antoine_magorn.siri_assignment",
       "adaptiveIcon": {
-        "package": "com.antoine_magorn.siri_assignment",
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF",
-        "versionCode":1
+        "backgroundColor": "#FFFFFF"
+        
       }
     },
     "web": {
