@@ -18,13 +18,13 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.antoine_magron.siri_assignment",
+      "bundleIdentifier": "com.antoineMagron.siriAssignment",
       "buildNumber": "1.0.0"
       
     },
     "android": {
       "versionCode":1,
-      "package": "com.antoine_magorn.siri_assignment",
+      "package": "com.antoineMagron.siriAssignment",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
