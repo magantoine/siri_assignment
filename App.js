@@ -19,6 +19,7 @@ export default function App(props) {
 
     const CENTRAL_CONNECTOR = "c"
     const TOP_LEFT_CONNECTOR = "tl"
+    const PADDING = 7
     
     // initialization positon and size of each blocks
     const initSize = 75
@@ -35,14 +36,14 @@ export default function App(props) {
     
     useEffect(() => {
       // computes the min and max coordinates of each block
-      let min1x = pos1[0]
-      let min1y = pos1[1]
-      let min2x = pos2[0]
-      let min2y = pos2[1]
-      let max1x = pos1[0] + size1[0]
-      let max1y = pos1[1] + size1[1] 
-      let max2x = pos2[0] + size2[0] 
-      let max2y = pos2[1] + size2[1]
+      let min1x = pos1[0] + PADDING
+      let min1y = pos1[1] + PADDING
+      let min2x = pos2[0] + PADDING
+      let min2y = pos2[1] + PADDING
+      let max1x = pos1[0] + size1[0] - PADDING
+      let max1y = pos1[1] + size1[1] - PADDING
+      let max2x = pos2[0] + size2[0] - PADDING
+      let max2y = pos2[1] + size2[1] - PADDING
       let aLeftOfB = max1x < min2x
       let aRightOfB = max2x < min1x
       let aAboveB = min1y > max2y
@@ -147,7 +148,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'red',
     justifyContent:"center", 
     alignItems:"center",
-    borderRadius:9
+    borderRadius:5
   }, 
   backButton:{
     backgroundColor:"grey",
